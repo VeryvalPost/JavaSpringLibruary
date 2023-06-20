@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Электронная библиотека</title>
+</head>
+<body>
+<h1>Электронная библиотека</h1>
+
+
+<h2>Поиск книги</h2>
+<form action="/api/library/books" method="GET">
+    <label>Поиск по автору:</label>
+    <input type="text" name="author" placeholder="Автор">
+    <input type="submit" value="Искать">
+</form>
+
+
+<form action="/api/library/books" method="GET">
+    <label>Поиск по названию:</label>
+    <input type="text" name="title" placeholder="Название">
+    <input type="submit" value="Искать">
+</form>
+
+
+<h2>Добавление книг</h2>
+<form action="/api/library/books" method="POST" onsubmit="submitForm(event)">
+    <label>Название:</label>
+    <input type="text" id="title" placeholder="Название">
+    <label>Авторы (через запятую):</label>
+    <input type="text" id="authors" placeholder="Авторы">
+    <input type="submit" value="Добавить">
+</form>
+
+<script>
+    function submitForm(event) {
+        event.preventDefault();
+
+        var title = document.getElementById('title').value;
+        var authors = document.getElementById('authors').value.split(',');
+
+        var book = {
+            "title": title,
+            "authors": authors.map(function (author) {
+                return {"name": author.trim()};
+            })
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/library/books");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = function () {
+            if (xhr.status === 201) {
+                alert("Книга добавлена успешно");
+            } else {
+                alert("Произошла ошибка при добавлении книги");
+            }
+        };
+        xhr.send(JSON.stringify(book));
+    }
+</script>
+
+
+<h2>Добавление авторов</h2>
+<form id="authorForm" method="POST">
+    <label>Имя:</label>
+    <input type="text" id="name" placeholder="Имя">
+    <input type="submit" value="Добавить">
+</form>
+
+<script>
+    document.getElementById('authorForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var author = {
+            name: document.getElementById('name').value
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/library/authors");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = function () {
+            if (xhr.status === 201) {
+                alert('Автор добавлен успешно');
+            } else {
+                alert('Произошла ошибка при добавлении автора');
+            }
+        };
+        xhr.send(JSON.stringify(author));
+    });
+</script>
+
+</body>
+</html>
